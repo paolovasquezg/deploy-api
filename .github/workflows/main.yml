@@ -1,4 +1,4 @@
-name: Deploy API
+name: Deploy FastAPI API
 
 on:
   push:
@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy:
-    name: Deploy API
+    name: Deploy FastAPI
     runs-on: self-hosted
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -25,11 +26,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run API
+      - name: Run FastAPI
         run: |
           pkill -f "uvicorn main:app" || true
           source venv/bin/activate
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
+          nohup python -m uvicorn main:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
 
       - name: Check API
-        run: curl -f http://localhost:8000/ || exit 1
+        run: |
+          sleep 5
+          curl -f http://localhost:8000/ || exit 1
