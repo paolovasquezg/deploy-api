@@ -13,18 +13,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Run API
         run: |
           python3 -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run API
-        run: |
           pkill -f "uvicorn main:app" || true
-          nohup ./venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
-
+          nohup python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
 
       - name: Check API
         run: curl -f http://localhost:8000/ || exit 1
